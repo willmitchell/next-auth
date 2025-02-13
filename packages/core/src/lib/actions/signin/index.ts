@@ -15,23 +15,36 @@ export async function signIn(
 ): Promise<ResponseInternal> {
   const signInUrl = `${options.url.origin}${options.basePath}/signin`
 
-  if (!options.provider) return { redirect: signInUrl, cookies }
+  options.logger.verbose("Starting signIn function")
+  options.logger.verbose(`Provider type: ${options.provider?.type}`)
+  options.logger.verbose(`Provider ID: ${options.provider?.id}`)
+
+  if (!options.provider) {
+    options.logger.verbose("No provider found, redirecting to signInUrl")
+    return { redirect: signInUrl, cookies }
+  }
 
   switch (options.provider.type) {
     case "oauth":
     case "oidc": {
+      options.logger.verbose("Provider type is oauth or oidc")
       const { redirect, cookies: authCookies } = await getAuthorizationUrl(
         request.query,
         options
       )
       if (authCookies) cookies.push(...authCookies)
+      options.logger.verbose("Ending signIn function")
       return { redirect, cookies }
     }
     case "email": {
+      options.logger.verbose("Provider type is email")
       const response = await sendToken(request, options)
+      options.logger.verbose("Ending signIn function")
       return { ...response, cookies }
     }
     default:
+      options.logger.verbose("Provider type is default")
+      options.logger.verbose("Ending signIn function")
       return { redirect: signInUrl, cookies }
   }
 }

@@ -18,6 +18,9 @@ export async function sendToken(
   const normalizer = provider.normalizeIdentifier ?? defaultNormalizer
   const email = normalizer(body?.email)
 
+  options.logger.verbose("Starting sendToken function")
+  options.logger.verbose(`Email: ${email}`)
+
   const defaultUser = { id: crypto.randomUUID(), email, emailVerified: null }
   const user = (await adapter!.getUserByEmail(email)) ?? defaultUser
 
@@ -52,10 +55,14 @@ export async function sendToken(
   const token =
     (await provider.generateVerificationToken?.()) ?? randomString(32)
 
+  options.logger.verbose(`Token: ${token}`)
+
   const ONE_DAY_IN_SECONDS = 86400
   const expires = new Date(
     Date.now() + (provider.maxAge ?? ONE_DAY_IN_SECONDS) * 1000
   )
+
+  options.logger.verbose(`Expiration Date: ${expires}`)
 
   const secret = provider.secret ?? options.secret
 
@@ -82,6 +89,8 @@ export async function sendToken(
   })
 
   await Promise.all([sendRequest, createToken])
+
+  options.logger.verbose("Ending sendToken function")
 
   return {
     redirect: `${baseUrl}/verify-request?${new URLSearchParams({

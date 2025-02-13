@@ -16,6 +16,8 @@ export async function getAuthorizationUrl(
 ) {
   const { logger, provider } = options
 
+  logger.verbose("Starting getAuthorizationUrl function")
+
   let url = provider.authorization?.url
   let as: o.AuthorizationServer | undefined
 
@@ -117,6 +119,10 @@ export async function getAuthorizationUrl(
   if (provider.type === "oidc" && !url.searchParams.has("scope")) {
     url.searchParams.set("scope", "openid profile email")
   }
+
+  logger.verbose("Authorization URL:", url.toString())
+  logger.verbose("Cookies:", cookies)
+  logger.verbose("Ending getAuthorizationUrl function")
 
   logger.debug("authorization url is ready", { url, cookies, provider })
   return { redirect: url.toString(), cookies }
