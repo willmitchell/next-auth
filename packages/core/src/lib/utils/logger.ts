@@ -18,6 +18,7 @@ export interface LoggerInstance extends Record<string, Function> {
   warn: (code: WarningCode) => void
   error: (error: Error) => void
   debug: (message: string, metadata?: unknown) => void
+  verbose: (message: string, metadata?: unknown) => void
 }
 
 const red = "\x1b[31m"
@@ -56,6 +57,12 @@ const defaultLogger: LoggerInstance = {
       JSON.stringify(metadata, null, 2)
     )
   },
+  verbose(message, metadata) {
+    console.log(
+      `${grey}[auth][verbose]:${reset} ${message}`,
+      JSON.stringify(metadata, null, 2)
+    )
+  },
 }
 
 /**
@@ -75,6 +82,7 @@ export function setLogger(
   if (config.logger?.error) newLogger.error = config.logger.error
   if (config.logger?.warn) newLogger.warn = config.logger.warn
   if (config.logger?.debug) newLogger.debug = config.logger.debug
+  if (config.logger?.verbose) newLogger.verbose = config.logger.verbose
 
   config.logger ??= newLogger
   return newLogger

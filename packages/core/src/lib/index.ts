@@ -38,6 +38,10 @@ export async function AuthInternal(
     options.logger
   )
 
+  options.logger.verbose(`Starting AuthInternal function`)
+  options.logger.verbose(`Action: ${action}`)
+  options.logger.verbose(`Provider ID: ${providerId}`)
+
   if (method === "GET") {
     const render = renderPage({ ...options, query: request.query, cookies })
     switch (action) {
@@ -93,5 +97,8 @@ export async function AuthInternal(
       default:
     }
   }
+
+  options.logger.verbose(`Ending AuthInternal function`)
+
   throw new UnknownAction(`Cannot handle action: ${action}`)
 }

@@ -104,6 +104,10 @@ export async function Auth(
 ): Promise<Response | ResponseInternal> {
   const logger = setLogger(config)
 
+  logger.verbose("Starting Auth function")
+  logger.verbose(`Request URL: ${request.url}`)
+  logger.verbose(`Request Method: ${request.method}`)
+
   const internalRequest = await toInternalRequest(request, config)
   // There was an error parsing the request
   if (!internalRequest) return Response.json(`Bad request.`, { status: 400 })
@@ -195,6 +199,8 @@ export async function Auth(
 
     if (isRedirect) return Response.json({ url })
     return Response.redirect(url)
+  } finally {
+    logger.verbose("Ending Auth function")
   }
 }
 
